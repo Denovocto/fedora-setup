@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Update the system
+echo "Updating the system..."
+sudo dnf update -y
+sudo dnf upgrade -y
+
 # Checking regular 1st Party repo packages
 echo "Checking 1st Party repo packages..."
 all_packages_found=true
@@ -31,7 +36,7 @@ go install $go_packages
 echo "Enabling RPM Fusion Repositories..."
 sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 rpm_fusion_packages=$(cat ./3rd-party.rpm-fusion-packages.list)
-sudo dnf install -y $rpm_fusion_packages
+sudo dnf install -y $rpm_fusion_packages --allow-erasing
 
 # Installing Rust
 echo "Installing Rust..."
