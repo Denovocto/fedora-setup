@@ -36,7 +36,7 @@ go install $go_packages
 echo "Enabling RPM Fusion Repositories..."
 sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 rpm_fusion_packages=$(cat ./3rd-party.rpm-fusion-packages.list)
-sudo dnf install -y $rpm_fusion_packages --allow-erasing
+sudo dnf install -y $rpm_fusion_packages --allowerasing
 
 # Installing Rust
 echo "Installing Rust..."
@@ -75,7 +75,7 @@ sudo dnf --refresh install -y $copr_packages
 # Installing Flatpaks
 echo "Installing Flatpaks from Flathub..."
 flatpak_packages=$(cat ./flatpaks.flathub.list)
-flatpak install -y --non-interactive flathub $flatpak_packages
+flatpak install -y --noninteractive flathub $flatpak_packages
 
 # Installing downloaded rpms
 # Installing AppImageLauncher
@@ -88,7 +88,7 @@ sudo dnf install -y $appimagelauncher_tmp
 
 # Installing Oh My Zsh
 echo "Installing Oh My Zsh..."
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Installing Zsh Plugins
 echo "Installing Zsh Plugins..."
