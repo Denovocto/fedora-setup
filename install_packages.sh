@@ -122,8 +122,8 @@ mv *.AppImage ~/Applications
 echo "Installing fonts..."
 firacode_mono_nerdfont_zip_tmp=$(mktemp -t firacode-mono-nerdfont-XXXX.zip)
 firacode_mono_nerdfont_dir_tmp=$(mktemp -d -t firacode-mono-nerdfont-XXXX)
-trap "rm -f $firacode_mono_nerdfont_zip_tmp"
-trap "rm -rf $firacode_mono_nerdfont_dir_tmp"
+trap "rm -f $firacode_mono_nerdfont_zip_tmp" EXIT
+trap "rm -rf $firacode_mono_nerdfont_dir_tmp" EXIT
 fira_code_zip_link=$(curl -sL https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | jq -r '.assets[] | select(.name | match("FiraCode.zip")).browser_download_url')
 curl -sL $fira_code_zip_link -o $firacode_mono_nerdfont_zip_tmp
 unzip $firacode_mono_nerdfont_zip_tmp -d $firacode_mono_nerdfont_dir_tmp
