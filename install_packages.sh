@@ -90,19 +90,10 @@ sudo dnf install -y $appimagelauncher_tmp
 echo "Installing Oh My Zsh..."
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
-# Installing Zsh Plugins
-echo "Installing Zsh Plugins..."
-git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/spaceship-prompt/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
-ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-git clone https://github.com/spaceship-prompt/spaceship-vi-mode.git $ZSH_CUSTOM/plugins/spaceship-vi-mode
-
 # Installing App Images
 echo "Installing AppImages..."
 mkdir -p ~/Applications
-appimage_static_urls=$(cat ./appimages-url.static.list)
+appimage_static_urls=$(cat ./appimages-urls.static.list)
 for appimage_url in $appimage_static_urls
 do
     curl -sL $appimage_url -O -J
@@ -142,3 +133,12 @@ unzip $firacode_mono_nerdfont_zip_tmp -d $firacode_mono_nerdfont_dir_tmp
 mkdir -p ~/.local/share/fonts
 cp $firacode_mono_nerdfont_dir_tmp/*.ttf ~/.local/share/fonts
 fc-cache -f -v
+
+# Installing Zsh Plugins
+echo "Installing Zsh Plugins..."
+zsh -c "git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete"
+zsh -c "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+zsh -c "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+zsh -c "git clone https://github.com/spaceship-prompt/spaceship-prompt.git \"$ZSH_CUSTOM/themes/spaceship-prompt\" --depth=1"
+zsh -c "ln -s \"$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme\" \"$ZSH_CUSTOM/themes/spaceship.zsh-theme\""
+zsh -c "git clone https://github.com/spaceship-prompt/spaceship-vi-mode.git \"$ZSH_CUSTOM/plugins/spaceship-vi-mode\""

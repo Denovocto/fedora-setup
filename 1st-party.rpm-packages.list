@@ -91,3 +91,6 @@ zbar
 zbar-qt
 zoxide
 zsh
+libgda
+libgda-sqlite
+gsound
