@@ -12,18 +12,18 @@ done
 
 # Installing Regular Available Packages
 echo "Installing regular 1st Party repo packages"
-rpm_packages=$(cat packages.list)
+rpm_packages=$(cat ./1st-party.rpm-packages.list)
 sudo dnf install -y $rpm_packages
 
 # Installing Go Packages
 echo "Installing Go Packages"
-go_packages=$(cat go-packages.list)
+go_packages=$(cat ./go-packages.list)
 go install $go_packages
 
 # Enabling RPM Fusion Fedora Repositories
 echo "Enabling RPM Fusion Repositories..."
 sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-rpm_fusion_packages=$(cat 3rd-party.rpm-fusion-packages.list)
+rpm_fusion_packages=$(cat ./3rd-party.rpm-fusion-packages.list)
 sudo dnf install -y $rpm_fusion_packages
 
 # Installing Rust
@@ -35,7 +35,7 @@ bash $rust_install_script_tmp -y --profile default
 
 # Installing Packages from cargo
 echo "Installing Packages from cargo..."
-cargo_packages=$(cat cargo-packages.list)
+cargo_packages=$(cat ./cargo-packages.list)
 cargo install $cargo_packages
 
 # Installing Bun
@@ -57,12 +57,12 @@ echo "Installing packages from COPR repos..."
 sudo dnf copr enable -y atim/bandwhich
 sudo dnf copr enable -y varlad/onefetch
 
-copr_packages=$(cat 3rd-party.copr-rpm-packages.list)
+copr_packages=$(cat ./3rd-party.copr-rpm-packages.list)
 sudo dnf --refresh install -y $copr_packages
 
 # Installing Flatpaks
 echo "Installing Flatpaks from Flathub..."
-flatpak_packages=$(cat flatpaks.flathub.list)
+flatpak_packages=$(cat ./flatpaks.flathub.list)
 flatpak install -y --non-interactive flathub $flatpak_packages
 
 # Installing downloaded rpms
@@ -90,7 +90,7 @@ git clone https://github.com/spaceship-prompt/spaceship-vi-mode.git $ZSH_CUSTOM/
 # Installing App Images
 echo "Installing AppImages..."
 mkdir -p ~/Applications
-appimage_static_urls=$(cat appimages-url.static.list)
+appimage_static_urls=$(cat ./appimages-url.static.list)
 for appimage_url in $appimage_static_urls
 do
     curl -sL $appimage_url -O -J
