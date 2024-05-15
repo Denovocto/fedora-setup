@@ -97,10 +97,7 @@ appimage_static_urls=$(cat ./appimages-urls.static.list)
 for appimage_url in $appimage_static_urls
 do
     curl -sL $appimage_url -O -J
-    chmod +x *.AppImage
-    mv *.AppImage ~/Applications
 done
-
 insomnia_latest_release_url=$(curl -sL https://api.github.com/repos/Kong/insomnia/releases/latest | jq -r '.assets[] | select(.name | match(".*AppImage")).browser_download_url')
 curl -sL $insomnia_latest_release_url -O -J
 
