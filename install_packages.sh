@@ -2,13 +2,20 @@
 
 # Checking regular 1st Party repo packages
 echo "Checking 1st Party repo packages..."
+all_packages_found=true
 for package in $(cat ./1st-party.rpm-packages.list)
 do
     if ! dnf info $package > /dev/null;
     then
         echo "$package not found"
+        all_packages_found=false
     fi
 done
+if [ $all_packages_found = false ]
+then
+    echo "Some packages not found. Exiting..."
+    exit 1
+fi
 
 # Installing Regular Available Packages
 echo "Installing regular 1st Party repo packages"
