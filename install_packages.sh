@@ -118,7 +118,7 @@ curl -sL $rquickshare_latest_release_url -O -J
 
 wezterm_latest_release_url=$(curl -sL https://api.github.com/repos/wez/wezterm/releases/latest | jq -r '.assets[] | select(.name | match(".*x86_64.*AppImage$")).browser_download_url')
 curl -sL $wezterm_latest_release_url -O -J
-chmod +x *.AppImage
+find . -name "*.AppImage" -exec chmod +x {}
 mv *.AppImage ~/Applications
 
 # Installing fonts
