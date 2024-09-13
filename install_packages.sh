@@ -113,7 +113,7 @@ curl -sL $trezor_suite_latest_release_url -O -J
 rquickshare_latest_release_url=$(curl -sL https://api.github.com/repos/Martichou/rquickshare/releases/latest | jq -r '.assets[] | select(.name | match(".*amd64.*AppImage")).browser_download_url')
 curl -sL $rquickshare_latest_release_url -O -J
 
-wezterm_latest_release_url=$(curl -sL https://api.github.com/repos/wez/wezterm/releases/latest | jq -r '.assets[] | select(.name | match(".*x86_64.*AppImage$")).browser_download_url')
+wezterm_latest_release_url=$(curl -sL https://api.github.com/repos/wez/wezterm/releases/latest | jq -r '.assets[] | select(.name | match(".*AppImage$")).browser_download_url')
 curl -sL $wezterm_latest_release_url -O -J
 find . -name "*.AppImage" -exec chmod +x {}
 mv *.AppImage ~/Applications
@@ -127,8 +127,14 @@ trap "rm -rf $firacode_mono_nerdfont_dir_tmp" EXIT
 fira_code_zip_link=$(curl -sL https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | jq -r '.assets[] | select(.name | match("FiraCode.zip")).browser_download_url')
 curl -sL $fira_code_zip_link -o $firacode_mono_nerdfont_zip_tmp
 unzip $firacode_mono_nerdfont_zip_tmp -d $firacode_mono_nerdfont_dir_tmp
-mkdir -p ~/.local/share/fonts
-cp $firacode_mono_nerdfont_dir_tmp/*.ttf ~/.local/share/fonts
+mkdir -p $HOME/.local/share/fonts
+cp $firacode_mono_nerdfont_dir_tmp/*.ttf $HOME/.local/share/fonts
+#TODO: download Apple Color Emoji, configure firefox, zen, and fonts-config to use it
+apple_color_emoji_ttf_link=$(curl -sL https://api.github.com/repos/samuelngs/apple-emoji-linux/releases/latest | jq -r '.assets[] | select(.name | match("AppleColorEmoji.ttf")).browser_download_url')
+curl -sL $apple_color_emoji_ttf_link -o $HOME/.local/share/fonts/AppleColorEmoji.ttf
+sudo cp ./configs/home/.config/fontconfig/fonts.conf $HOME/.config/fontconfig/fonts.conf
+sudo cp ./configs/etc/fonts/conf.d/45-generic.conf /etc/fonts/conf.d/45-generic.conf
+sudo cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
 fc-cache -f -v
 
 # Installing Zsh Plugins
@@ -139,3 +145,4 @@ zsh -c "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:
 zsh -c "git clone https://github.com/spaceship-prompt/spaceship-prompt.git \"$ZSH_CUSTOM/themes/spaceship-prompt\" --depth=1"
 zsh -c "ln -s \"$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme\" \"$ZSH_CUSTOM/themes/spaceship.zsh-theme\""
 zsh -c "git clone https://github.com/spaceship-prompt/spaceship-vi-mode.git \"$ZSH_CUSTOM/plugins/spaceship-vi-mode\""
+chsh -s $(which zsh)

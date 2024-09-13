@@ -94,3 +94,5 @@ zsh
 libgda
 libgda-sqlite
 gsound
+libheif
+heif-pixbuf-loader
