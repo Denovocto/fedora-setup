@@ -147,12 +147,13 @@ cp $firacode_mono_nerdfont_dir_tmp/*.ttf $HOME/.local/share/fonts
 apple_color_emoji_ttf_link=$(curl -sL https://api.github.com/repos/samuelngs/apple-emoji-linux/releases/latest | jq -r '.assets[] | select(.name | match("AppleColorEmoji.ttf")).browser_download_url')
 curl -sL $apple_color_emoji_ttf_link -o $HOME/.local/share/fonts/AppleColorEmoji.ttf
 mkdir -p $HOME/.config/fontconfig
+echo $root_password | sudo updatedb
 echo $root_password | sudo -S cp ./configs/home/.config/fontconfig/fonts.conf $HOME/.config/fontconfig/fonts.conf
 echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/45-generic.conf /etc/fonts/conf.d/45-generic.conf
 echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
-prefs_js_path="$(find $HOME/.var/app/io.github.zen_browser.zen/.zen -type d -name '*(alpha)' -print)/prefs.js"
-echo "user_pref("font.name-list.emoji", "Apple Color Emoji");" >> "$prefs_js_path"
-smile_noto_emoji_paths=$(find "/var/lib/flatpak/runtime" -type f -name 'NotoColorEmoji.ttf')
+user_js_path="$(find $HOME/.var/app/io.github.zen_browser.zen/.zen -type d -name '*(alpha)' -print)/user.js"
+echo 'user_pref("font.name-list.emoji", "Apple Color Emoji");' >> "$prefs_js_path"
+noto_emoji_paths=$(locate "NotoColorEmoji.ttf")
 for path in $smile_noto_emoji_paths; do
     echo "Patching font: $path"
     echo $root_password | sudo -S cp $HOME/.local/share/fonts/AppleColorEmoji.ttf $path
