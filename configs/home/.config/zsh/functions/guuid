@@ -1,0 +1,5 @@
+function guuid() {
+	uuidgen | awk '{printf tolower($0)}' | xclip -selection clipboard	
+}
+
+guuid

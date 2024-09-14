@@ -1,0 +1,14 @@
+function clip2qr() {
+	local option=$1;
+	TMPFILE=$(mktemp /tmp/clip2qr-XXXXX.png);
+	trap "rm -f $TMPFILE" EXIT;
+	xclip -o -selection clipboard | qrencode -s 10 -o $TMPFILE; 
+	cat $TMPFILE | xclip -selection clipboard -target image/png;
+	if [[ "$option" == "cast" ]]; then
+		catt cast $TMPFILE;
+	else
+		display $TMPFILE;
+		wait;
+	fi
+	rm $TMPFILE;
+}

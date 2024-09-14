@@ -57,6 +57,18 @@ trap "rm -f $bun_install_script_tmp" EXIT
 curl -fsSL https://bun.sh/install -o $bun_install_script_tmp
 bash $bun_install_script_tmp 
 
+# Installing Zed
+curl -f https://zed.dev/install.sh | sh
+
+# Installing Yubico Authenticator
+yubico_authenticator_tar_gz_tmp=$(mktemp -t yubico-authenticator-XXXX.tar.gz)
+yubico_authenticator_dir_tmp=$(mktemp -d -t yubico-authenticator-XXXX)
+trap "rm -f $yubico_authenticator_tar_gz_tmp" EXIT
+trap "rm -rf $yubico_authenticator_dir_tmp" EXIT
+curl -sL https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz -o $yubico_authenticator_tar_gz_tmp
+tar -xzvf $yubico_authenticator_tar_gz_tmp -C $yubico_authenticator_dir_tmp
+bash $yubico_authenticator_dir_tmp/desktop_integration.sh --install
+
 # Installing from 3rd Party Repos
 echo "Installing packages from 3rd Party Repos..."
 # Add the Mullvad repository server to dnf
@@ -115,7 +127,7 @@ curl -sL $rquickshare_latest_release_url -O -J
 
 wezterm_latest_release_url=$(curl -sL https://api.github.com/repos/wez/wezterm/releases/latest | jq -r '.assets[] | select(.name | match(".*AppImage$")).browser_download_url')
 curl -sL $wezterm_latest_release_url -O -J
-find . -name "*.AppImage" -exec chmod +x {}
+find . -name "*.AppImage" -exec chmod +x {} #FIXME: not working
 mv *.AppImage ~/Applications
 
 # Installing fonts
@@ -129,12 +141,16 @@ curl -sL $fira_code_zip_link -o $firacode_mono_nerdfont_zip_tmp
 unzip $firacode_mono_nerdfont_zip_tmp -d $firacode_mono_nerdfont_dir_tmp
 mkdir -p $HOME/.local/share/fonts
 cp $firacode_mono_nerdfont_dir_tmp/*.ttf $HOME/.local/share/fonts
-#TODO: download Apple Color Emoji, configure firefox, zen, and fonts-config to use it
 apple_color_emoji_ttf_link=$(curl -sL https://api.github.com/repos/samuelngs/apple-emoji-linux/releases/latest | jq -r '.assets[] | select(.name | match("AppleColorEmoji.ttf")).browser_download_url')
 curl -sL $apple_color_emoji_ttf_link -o $HOME/.local/share/fonts/AppleColorEmoji.ttf
 sudo cp ./configs/home/.config/fontconfig/fonts.conf $HOME/.config/fontconfig/fonts.conf
 sudo cp ./configs/etc/fonts/conf.d/45-generic.conf /etc/fonts/conf.d/45-generic.conf
 sudo cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
+prefs_js_path="$(find $HOME/.var/app/io.github.zen_browser.zen/.zen -type d -name '*(alpha)' -print)/prefs.js"
+echo "user_pref("font.name-list.emoji", "Apple Color Emoji");" >> $prefs_js_path
+smile_flatpak_runtime=$(flatpak info it.mijorus.smile --show-runtime)
+smile_noto_emoji_path=$(find "/var/lib/flatpak/runtime/$smile_flatpak_runtime" -type f -name '*NotoColorEmoji.ttf')
+sudo ln -f $HOME/.local/share/fonts/AppleColorEmoji.ttf $smile_noto_emoji_path
 fc-cache -f -v
 
 # Installing Zsh Plugins
@@ -145,4 +161,15 @@ zsh -c "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:
 zsh -c "git clone https://github.com/spaceship-prompt/spaceship-prompt.git \"$ZSH_CUSTOM/themes/spaceship-prompt\" --depth=1"
 zsh -c "ln -s \"$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme\" \"$ZSH_CUSTOM/themes/spaceship.zsh-theme\""
 zsh -c "git clone https://github.com/spaceship-prompt/spaceship-vi-mode.git \"$ZSH_CUSTOM/plugins/spaceship-vi-mode\""
+
+mkdir -p $HOME/.config/zsh
+cp -r ./configs/home/.config/zsh $HOME/.config/zsh
+#TODO: Install Gnome Tweaks and Extensions
+#TODO: Transfer Settings
+#TODO: Transfer history, zshrc, .wezterm.lua
+#TODO: Install Beekeeper Studio
+#TODO: Install Icons
+#TODO: Install framework logo bootup animation
+#TODO: Install framework logo menubar logo
+#TODO: Install Zint Barcode Studio
 chsh -s $(which zsh)

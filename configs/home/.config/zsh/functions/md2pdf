@@ -1,0 +1,18 @@
+function md2pdf() {
+	input=$1;
+	output=$2;
+	if [ -z $input ] || [ -z $output ]
+	then
+		echo "Usage: md2pdf <input> <output>";
+	else
+		if ! [ -r $input ]
+		then
+			echo "$input does not exist or isn't readable";
+		fi
+		TMPFILE=$(mktemp /tmp/md2pdf-XXXXX.html);
+		trap "rm -f $TMPFILE" EXIT;
+		grip $input --export $TMPFILE;
+		wkhtmltopdf --enable-local-file-access $TMPFILE $output;
+		rm $TMPFILE;
+	fi
+}

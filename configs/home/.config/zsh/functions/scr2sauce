@@ -1,0 +1,6 @@
+TMPFILE=$(mktemp /tmp/sauce-XXXXX.png);
+trap "rm -f $TMPFILE" EXIT;
+flameshot gui --raw > $TMPFILE;
+sauce file $TMPFILE | xclip -sel clip 
+rm $TMPFILE;
+
