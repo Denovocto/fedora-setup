@@ -5,8 +5,8 @@ read -s root_password
 
 # Update the system
 echo "Updating the system..."
-sudo dnf update -y
-sudo dnf upgrade -y
+echo $root_password | sudo -S dnf update -y
+echo $root_password | sudo -S dnf upgrade -y
 
 # Checking regular 1st Party repo packages
 echo "Checking 1st Party repo packages..."
@@ -28,7 +28,7 @@ fi
 # Installing Regular Available Packages
 echo "Installing regular 1st Party repo packages"
 rpm_packages=$(cat ./1st-party.rpm-packages.list)
-sudo dnf install -y $rpm_packages
+echo $root_password | sudo -S dnf install -y $rpm_packages
 
 # Installing Go Packages
 echo "Installing Go Packages"
@@ -37,9 +37,9 @@ go install $go_packages
 
 # Enabling RPM Fusion Fedora Repositories
 echo "Enabling RPM Fusion Repositories..."
-sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+echo $root_password | sudo -S dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 rpm_fusion_packages=$(cat ./3rd-party.rpm-fusion-packages.list)
-sudo dnf install -y $rpm_fusion_packages --allowerasing
+echo $root_password | sudo -S dnf install -y $rpm_fusion_packages --allowerasing
 
 # Installing Rust
 echo "Installing Rust..."
@@ -75,17 +75,17 @@ bash $yubico_authenticator_dir_tmp/desktop_integration.sh --install
 # Installing from 3rd Party Repos
 echo "Installing packages from 3rd Party Repos..."
 # Add the Mullvad repository server to dnf
-sudo dnf config-manager --add-repo https://repository.mullvad.net/rpm/stable/mullvad.repo
+echo $root_password | sudo -S dnf config-manager --add-repo https://repository.mullvad.net/rpm/stable/mullvad.repo
 # Installing Mulvad VPN
-sudo dnf install -y mullvad-vpn
+echo $root_password | sudo -S dnf install -y mullvad-vpn
 
 # Installing from COPR
 echo "Installing packages from COPR repos..."
-sudo dnf copr enable -y atim/bandwhich
-sudo dnf copr enable -y varlad/onefetch
+echo $root_password | sudo -S dnf copr enable -y atim/bandwhich
+echo $root_password | sudo -S dnf copr enable -y varlad/onefetch
 
 copr_packages=$(cat ./3rd-party.copr-rpm-packages.list)
-sudo dnf --refresh install -y $copr_packages
+echo $root_password | sudo -S dnf --refresh install -y $copr_packages
 
 # Installing Flatpaks
 echo "Installing Flatpaks from Flathub..."
@@ -99,7 +99,7 @@ appimagelauncher_tmp=$(mktemp -t appimagelauncher-XXXX.rpm)
 trap "rm -f $appimagelauncher_tmp" EXIT
 appimagelauncher_rpm_download_link=$(curl -sL https://api.github.com/repos/TheAssassin/AppImageLauncher/releases/latest | jq -r '.assets[] | select(.name | match(".*x86_64.*rpm")).browser_download_url')
 curl -sL $appimagelauncher_rpm_download_link -o $appimagelauncher_tmp
-sudo dnf install -y $appimagelauncher_tmp
+echo $root_password | sudo -S dnf install -y $appimagelauncher_tmp
 
 # Installing Oh My Zsh
 echo "Installing Oh My Zsh..."
@@ -147,15 +147,15 @@ cp $firacode_mono_nerdfont_dir_tmp/*.ttf $HOME/.local/share/fonts
 apple_color_emoji_ttf_link=$(curl -sL https://api.github.com/repos/samuelngs/apple-emoji-linux/releases/latest | jq -r '.assets[] | select(.name | match("AppleColorEmoji.ttf")).browser_download_url')
 curl -sL $apple_color_emoji_ttf_link -o $HOME/.local/share/fonts/AppleColorEmoji.ttf
 mkdir -p $HOME/.config/fontconfig
-sudo cp ./configs/home/.config/fontconfig/fonts.conf $HOME/.config/fontconfig/fonts.conf
-sudo cp ./configs/etc/fonts/conf.d/45-generic.conf /etc/fonts/conf.d/45-generic.conf
-sudo cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
+echo $root_password | sudo -S cp ./configs/home/.config/fontconfig/fonts.conf $HOME/.config/fontconfig/fonts.conf
+echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/45-generic.conf /etc/fonts/conf.d/45-generic.conf
+echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
 prefs_js_path="$(find $HOME/.var/app/io.github.zen_browser.zen/.zen -type d -name '*(alpha)' -print)/prefs.js"
 echo "user_pref("font.name-list.emoji", "Apple Color Emoji");" >> "$prefs_js_path"
 smile_noto_emoji_paths=$(find "/var/lib/flatpak/runtime" -type f -name 'NotoColorEmoji.ttf')
 for path in $smile_noto_emoji_paths; do
     echo "Patching font: $path"
-    sudo cp $HOME/.local/share/fonts/AppleColorEmoji.ttf $path
+    echo $root_password | sudo -S cp $HOME/.local/share/fonts/AppleColorEmoji.ttf $path
 done
 
 fc-cache -f -v
