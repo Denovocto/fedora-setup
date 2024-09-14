@@ -152,6 +152,7 @@ echo $root_password | sudo -S cp ./configs/home/.config/fontconfig/fonts.conf $H
 echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/45-generic.conf /etc/fonts/conf.d/45-generic.conf
 echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
 user_js_path="$(find $HOME/.var/app/io.github.zen_browser.zen/.zen -type d -name '*(alpha)' -print)/user.js"
+timeout 5 flatpak run io.github.zen_browser.zen
 echo 'user_pref("font.name-list.emoji", "Apple Color Emoji");' >> "$prefs_js_path"
 noto_emoji_paths=$(locate "NotoColorEmoji.ttf")
 for path in $smile_noto_emoji_paths; do
