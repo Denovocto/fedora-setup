@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# capture root password
+read -s root_password
+
 # Update the system
 echo "Updating the system..."
 sudo dnf update -y
@@ -143,14 +146,18 @@ mkdir -p $HOME/.local/share/fonts
 cp $firacode_mono_nerdfont_dir_tmp/*.ttf $HOME/.local/share/fonts
 apple_color_emoji_ttf_link=$(curl -sL https://api.github.com/repos/samuelngs/apple-emoji-linux/releases/latest | jq -r '.assets[] | select(.name | match("AppleColorEmoji.ttf")).browser_download_url')
 curl -sL $apple_color_emoji_ttf_link -o $HOME/.local/share/fonts/AppleColorEmoji.ttf
+mkdir -p $HOME/.config/fontconfig
 sudo cp ./configs/home/.config/fontconfig/fonts.conf $HOME/.config/fontconfig/fonts.conf
 sudo cp ./configs/etc/fonts/conf.d/45-generic.conf /etc/fonts/conf.d/45-generic.conf
 sudo cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
 prefs_js_path="$(find $HOME/.var/app/io.github.zen_browser.zen/.zen -type d -name '*(alpha)' -print)/prefs.js"
-echo "user_pref("font.name-list.emoji", "Apple Color Emoji");" >> $prefs_js_path
-smile_flatpak_runtime=$(flatpak info it.mijorus.smile --show-runtime)
-smile_noto_emoji_path=$(find "/var/lib/flatpak/runtime/$smile_flatpak_runtime" -type f -name '*NotoColorEmoji.ttf')
-sudo ln -f $HOME/.local/share/fonts/AppleColorEmoji.ttf $smile_noto_emoji_path
+echo "user_pref("font.name-list.emoji", "Apple Color Emoji");" >> "$prefs_js_path"
+smile_noto_emoji_paths=$(find "/var/lib/flatpak/runtime" -type f -name 'NotoColorEmoji.ttf')
+for path in $smile_noto_emoji_paths; do
+    echo "Patching font: $path"
+    sudo cp $HOME/.local/share/fonts/AppleColorEmoji.ttf $path
+done
+
 fc-cache -f -v
 
 # Installing Zsh Plugins
