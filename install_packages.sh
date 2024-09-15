@@ -101,7 +101,7 @@ curl -sL https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenti
 echo $root_password | sudo -S tar -xzf $yubico_authenticator_tar_gz_tmp -C $yubico_authenticator_dir
 yubico_authenticator_extraction_dir=$(find $yubico_authenticator_dir -type d -name "*-linux")
 echo $root_password | sudo -S mv $yubico_authenticator_extraction_dir "$yubico_authenticator_dir/yubico-authenticator"
-yubico_installer_script_path="$yubico_authenticator_dir/desktop_integration.sh"
+yubico_installer_script_path="$yubico_authenticator_dir/yubico-authenticator/desktop_integration.sh"
 bash $yubico_installer_script_path --install
 
 # Installing Oh My Zsh
