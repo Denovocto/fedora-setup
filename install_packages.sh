@@ -63,14 +63,6 @@ bash $bun_install_script_tmp
 # Installing Zed
 curl -f https://zed.dev/install.sh | sh
 
-# Installing Yubico Authenticator
-yubico_authenticator_tar_gz_tmp=$(mktemp -t yubico-authenticator-XXXX.tar.gz)
-yubico_authenticator_dir_tmp=$(mktemp -d -t yubico-authenticator-XXXX)
-trap "rm -f $yubico_authenticator_tar_gz_tmp" EXIT
-trap "rm -rf $yubico_authenticator_dir_tmp" EXIT
-curl -sL https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz -o $yubico_authenticator_tar_gz_tmp
-tar -xzvf $yubico_authenticator_tar_gz_tmp -C $yubico_authenticator_dir_tmp
-bash $yubico_authenticator_dir_tmp/desktop_integration.sh --install
 
 # Installing from 3rd Party Repos
 echo "Installing packages from 3rd Party Repos..."
@@ -100,6 +92,19 @@ trap "rm -f $appimagelauncher_tmp" EXIT
 appimagelauncher_rpm_download_link=$(curl -sL https://api.github.com/repos/TheAssassin/AppImageLauncher/releases/latest | jq -r '.assets[] | select(.name | match(".*x86_64.*rpm")).browser_download_url')
 curl -sL $appimagelauncher_rpm_download_link -o $appimagelauncher_tmp
 echo $root_password | sudo -S dnf install -y $appimagelauncher_tmp
+
+# Installing Yubico Authenticator
+yubico_authenticator_tar_gz_tmp=$(mktemp -t yubico-authenticator-XXXX.tar.gz)
+trap "rm -f $yubico_authenticator_tar_gz_tmp" EXIT
+yubico_authenticator_dir="/opt/yubico-authenticator"
+echo $root_password | sudo -S mkdir -p $yubico_authenticator_dir
+curl -sL https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz -o $yubico_authenticator_tar_gz_tmp
+tar -xzf $yubico_authenticator_tar_gz_tmp -C $yubico_authenticator_dir
+yubico_authenticator_nested_dir_path=$(find $yubico_authenticator_dir type d -name "*-linux")
+cp -r $yubico_authenticator_nested_dir_path $yubico_authenticator_dir
+rm -rf $yubico_authenticator_nested_dir_path
+yubico_installer_script_path="$yubico_authenticator_dir/desktop_integration.sh"
+bash $yubico_installer_script_path --install
 
 # Installing Oh My Zsh
 echo "Installing Oh My Zsh..."
@@ -153,7 +158,7 @@ echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/45-generic.conf /etc
 echo $root_password | sudo -S cp ./configs/etc/fonts/conf.d/60-generic.conf /etc/fonts/conf.d/60-generic.conf
 user_js_path="$(find $HOME/.var/app/io.github.zen_browser.zen/.zen -type d -name '*(alpha)' -print)/user.js"
 timeout 5 flatpak run io.github.zen_browser.zen
-echo 'user_pref("font.name-list.emoji", "Apple Color Emoji");' >> "$prefs_js_path"
+echo 'user_pref("font.name-list.emoji", "Apple Color Emoji");' >> "$user_js_path"
 noto_emoji_paths=$(locate "NotoColorEmoji.ttf")
 for path in $smile_noto_emoji_paths; do
     echo "Patching font: $path"
