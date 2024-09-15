@@ -96,10 +96,11 @@ echo $root_password | sudo -S dnf install -y $appimagelauncher_tmp
 # Installing Yubico Authenticator
 yubico_authenticator_tar_gz_tmp=$(mktemp -t yubico-authenticator-XXXX.tar.gz)
 trap "rm -f $yubico_authenticator_tar_gz_tmp" EXIT
-yubico_authenticator_dir="/opt/yubico-authenticator"
-echo $root_password | sudo -S mkdir -p $yubico_authenticator_dir
+yubico_authenticator_dir="/opt"
 curl -sL https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz -o $yubico_authenticator_tar_gz_tmp
 echo $root_password | sudo -S tar -xzf $yubico_authenticator_tar_gz_tmp -C $yubico_authenticator_dir
+yubico_authenticator_extraction_dir=$(find $yubico_authenticator_dir -type d -name "*-linux")
+mv $yubico_authenticator_extraction_dir "$yubico_authenticator_dir/yubico-authenticator"
 yubico_installer_script_path="$yubico_authenticator_dir/desktop_integration.sh"
 bash $yubico_installer_script_path --install
 
