@@ -100,9 +100,6 @@ yubico_authenticator_dir="/opt/yubico-authenticator"
 echo $root_password | sudo -S mkdir -p $yubico_authenticator_dir
 curl -sL https://developers.yubico.com/yubioath-flutter/Releases/yubico-authenticator-latest-linux.tar.gz -o $yubico_authenticator_tar_gz_tmp
 echo $root_password | sudo -S tar -xzf $yubico_authenticator_tar_gz_tmp -C $yubico_authenticator_dir
-yubico_authenticator_nested_dir_path=$(find $yubico_authenticator_dir -type d -name "*-linux")
-echo $root_password | sudo -S cp -r $yubico_authenticator_nested_dir_path $yubico_authenticator_dir
-echo $root_password | sudo -S rm -rf $yubico_authenticator_nested_dir_path
 yubico_installer_script_path="$yubico_authenticator_dir/desktop_integration.sh"
 bash $yubico_installer_script_path --install
 
