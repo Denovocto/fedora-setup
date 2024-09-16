@@ -133,6 +133,11 @@ curl -sL $rquickshare_latest_release_url -O -J
 
 wezterm_latest_release_url=$(curl -sL https://api.github.com/repos/wez/wezterm/releases/latest | jq -r '.assets[] | select(.name | match(".*AppImage$")).browser_download_url')
 curl -sL $wezterm_latest_release_url -O -J
+
+beekeeper_latest_release_url=$(curl -sL https://api.github.com/repos/beekeeper-studio/ultimate-releases/releases/latest | jq -r '.assets[] | select(.name | test(".*arm64.*") | not) | select(.name | test(".*AppImage$")).browser_download_url')
+curl -sL $beekeeper_latest_release_url -O -J
+
+
 find . -name "*.AppImage" -exec chmod +x {} #FIXME: not working
 mv *.AppImage ~/Applications
 
@@ -179,7 +184,6 @@ cp -r ./configs/home/.config/zsh $HOME/.config/zsh
 #TODO: Install Gnome Tweaks and Extensions
 #TODO: Transfer Settings
 #TODO: Transfer history, zshrc, .wezterm.lua
-#TODO: Install Beekeeper Studio
 #TODO: Install Icons
 #TODO: Install framework logo bootup animation
 #TODO: Install framework logo menubar logo
